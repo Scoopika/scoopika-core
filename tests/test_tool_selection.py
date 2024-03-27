@@ -2,7 +2,7 @@ import unittest
 from langchain_openai import ChatOpenAI
 import os
 from dotenv import load_dotenv
-from scoopika_core.tool_selection import Selection
+from scoopika_core.tool_selection import ToolSelection
 
 load_dotenv()
 
@@ -37,7 +37,7 @@ class Test(unittest.TestCase):
             model_kwargs={"frequency_penalty": 0, "presence_penalty": 0, "top_p": 1.0},
         )
 
-        my_selection = Selection(llm)
+        my_selection = ToolSelection(llm)
 
         run = my_selection.selection(
             "could you clear the console and then print Hello World and the clear it again",

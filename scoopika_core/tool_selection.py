@@ -7,7 +7,7 @@ from .prompts import fill_tool_selection_prompt
 from .llm_output import process_llm_json_output
 import time
 
-class Selection:
+class ToolSelection:
 
     layer = "tool-selection"
     logs = []
