@@ -16,6 +16,7 @@ class ParameterProperty(BaseModel):
 
 	accept: Optional[List] # A list of the values the parameter's value can be (similar to enum)
 	similar_values: Optional[bool] = False # if LLM output does not exist in the list of accpeted value, use similarity model to get the closest one
+	minimum_score: Optional[int] = 80 # Minimum score to consider an accepted value a similar one (out of 100)
 
 	important: Optional[bool] = False # If the parameter is important (check for its value as is in the user's input)
 	match_context: Optional[bool] = False # If the parameter should appear in the user's context

@@ -67,8 +67,9 @@ class Selection:
             return {"success": False, "error": "Can't extract wanted tool"}
 
         selected_tool = wanted_tool["tool"]
+        tool_name = selected_tool["name"]
 
-        self.logger(self, f"Selected tool: {selected_tool['name']} in {time.time() - start}s", "success")
+        self.logger(self, f"Selected tool: '{tool_name}' in {time.time() - start}s", "success")
 
         return {
             "success": True,

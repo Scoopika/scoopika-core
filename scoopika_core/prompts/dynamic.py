@@ -29,19 +29,3 @@ def dynamic_prompt(task_schema, inputs):
 
     except ValueError as e:
         return {"success": False, "error": f"Invalid prompt task: {e}"}
-
-# Example usage
-print(dynamic_prompt(
-    {
-        "name": "1",
-        "type": "prompt",
-        "prompt": "Summarize: <input>",
-        "inputs": [{
-            "key": "input",
-            "required": True,  # Specify that "input" is required
-            "default": "hello my friend"
-        }]
-    }, {
-        # "input": "TEXT TO SUMMARIZE"
-    })
-)

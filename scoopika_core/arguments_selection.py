@@ -445,6 +445,7 @@ class ArgumentsSelection:
         required = is_allowed(param_options, "required")
         accepted_values = param_options["accept"]
         accepted_values_str = list(str(accepted_value).lower() for accepted_value in accepted_values)
+        minimum_score = param_options["minimum_score"]
 
         if len(accepted_values) < 1:
             self.logger(self, "Empty list of accepted values", "warning")
@@ -460,8 +461,14 @@ class ArgumentsSelection:
             }
 
         sorted_values = similarity.similarity(str(value), accepted_values_str)
-        wanted_index = sorted_values[0]
 
+        if len(sorted_values) < 1:
+            return {
+                "success": False,
+                "action": "stop" if required is True else "ignore",
+            }
+
+        wanted_index = sorted_values[0]
         return {"success": True, "value": accepted_values[wanted_index]}
 
     # ----- Log a new error and add it to the list of errors
