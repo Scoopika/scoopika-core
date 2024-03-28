@@ -31,6 +31,7 @@ class ArgumentsSelection:
         llm,
         inputs: Dict,
         tool: Dict,
+        context: str | None = None,
         verbose: bool = True,
         logger: Callable = logger,
         history=[],
@@ -53,7 +54,10 @@ class ArgumentsSelection:
             key: ParameterSchema(**self.parameters[key]).dict()
             for key in self.parameters.keys()
         }
-        self.context = build_context(inputs)
+        if context is None:
+            self.context = build_context(inputs)
+        else:
+            self.context = context
         self.build_kor_schema()
 
         self.validation_steps = [self.match_context, self.important, self.accept]

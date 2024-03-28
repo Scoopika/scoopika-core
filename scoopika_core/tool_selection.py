@@ -14,14 +14,14 @@ class ToolSelection:
     logs = []
 
     def __init__(
-        self, llm, logger=logger, multi_tools: bool = True, verbose: bool = True
+        self, llm, logger=logger, multi_tools: bool = False, verbose: bool = True
     ):
         self.llm = llm
         self.logger = logger
         self.multi_tools = multi_tools
         self.logs = verbose
 
-    def selection(self, task: str, tools: List, options: Dict = {}):
+    def selection(self, task: str, tools: List):
         start = time.time()
         tools_str = join_tools(
             tools
