@@ -1,4 +1,8 @@
-# ----- Build full context from user input and past actions
+"""Build full context from user input and past actions"""
+
+from .join_user_actions import join_user_actions
+
+
 def build_context(inputs):
     context = ""
     if "user_actions" in inputs:
