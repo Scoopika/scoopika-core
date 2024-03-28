@@ -7,6 +7,7 @@ Here are the names and descriptions for each tool:
 <tools>
 
 Given the user input, return the name of the tool to use.
+If no tool needs to be used or no tool exist in the tools list repond with 'not found'.
 Return your response as a JSON blob with 'name' key wrapped inside <json> tags.
 
 Example: <json>{"name": "tool name"}</json>."""
