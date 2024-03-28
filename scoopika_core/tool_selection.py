@@ -98,6 +98,9 @@ class ToolSelection:
                 "success": False
             }  # In case of empty JSON, like: '{}', then nothing is selected
 
+        if result == "none":
+            return {"success": False, "error": "No tools selected"}
+
         # Get a tool with the tool's name the model returned
         wanted_tools = list(tool for tool in tools if tool["name"] == result)
         is_valid = True if len(wanted_tools) != 0 else False
