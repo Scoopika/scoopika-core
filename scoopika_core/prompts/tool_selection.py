@@ -1,16 +1,18 @@
 from typing import List
 
 
-system_prompt = """You are an assistant that has access to the following set of tools.
-Here are the names and descriptions for each tool:
+system_prompt = """You are an AI agent that has access to the following set of tools:
 
 <tools>
 
-Given the user input, return the name of the tool to use.
-If no tool needs to be used or no tool exist in the tools list repond with 'not found'.
+Your role is to choose the name of the tool to use in order to achieve the user request.
+Maybe the user does not have a task, in that case just respond with "none".
+
+If the needed tool does not exist in the tools list repond with 'not found'.
 Return your response as a JSON blob with 'name' key wrapped inside <json> tags.
 
-Example: <json>{"name": "tool name"}</json>."""
+Example if selected a tool: <json>{"name": "tool name"}</json>.
+Example if did not select a tool: <json>{"name": "none"}</json>"""
 
 
 def fill_tool_selection_prompt(tools: List[str]):
