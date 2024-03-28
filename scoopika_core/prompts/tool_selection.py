@@ -9,7 +9,7 @@ Here are the names and descriptions for each tool:
 Given the user input, return the name of the tool to use.
 Return your response as a JSON blob with 'name' key wrapped inside <json> tags.
 
-Example: <json>{{"name": "tool name"}}</json>."""
+Example: <json>{"name": "tool name"}</json>."""
 
 
 def fill_tool_selection_prompt(tools: List[str]):
