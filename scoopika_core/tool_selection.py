@@ -7,6 +7,7 @@ from .prompts import fill_tool_selection_prompt
 from .llm_output import process_llm_json_output
 import time
 
+
 class ToolSelection:
 
     layer = "tool-selection"
@@ -69,7 +70,9 @@ class ToolSelection:
         selected_tool = wanted_tool["tool"]
         tool_name = selected_tool["name"]
 
-        self.logger(self, f"Selected tool: '{tool_name}' in {time.time() - start}s", "success")
+        self.logger(
+            self, f"Selected tool: '{tool_name}' in {time.time() - start}s", "success"
+        )
 
         return {
             "success": True,
@@ -91,7 +94,9 @@ class ToolSelection:
         elif len(out.keys()) > 0:
             result = out[list(out.keys())[0]]
         else:
-            return {"success": False}  # In case of empty JSON, like: '{}', then nothing is selected
+            return {
+                "success": False
+            }  # In case of empty JSON, like: '{}', then nothing is selected
 
         # Get a tool with the tool's name the model returned
         wanted_tools = list(tool for tool in tools if tool["name"] == result)
@@ -104,3 +109,22 @@ class ToolSelection:
             return {"success": False}
 
         return {"success": True, "tool": wanted_tools[0]}
+
+
+test_tools = [
+    {
+        "name": "print",
+        "description": "print values to the console",
+        "parameters": {
+            "values": {
+                "type": {"root": "array", "items": "string"},
+                "description": "The values to print to the console",
+            }
+        },
+    },
+    {
+        "name": "clear",
+        "description": "clear the console output",
+        "parameters": {},
+    },
+]

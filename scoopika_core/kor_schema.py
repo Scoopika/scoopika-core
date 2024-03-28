@@ -8,7 +8,10 @@ kor_types = ["Text", "Number"]
 kor_types_mappings = {}
 
 kor_types_mappings.update({key.casefold(): kor_types[0] for key in ("string", "str")})
-kor_types_mappings.update({key.casefold(): kor_types[1] for key in ("int", "float", "number")})
+kor_types_mappings.update(
+    {key.casefold(): kor_types[1] for key in ("int", "float", "number")}
+)
+
 
 # Build a Kor schema from a tool schema
 def build(schema: Dict):
@@ -85,6 +88,7 @@ def param_to_attr(param_key: str, param: Dict[str, Any]):
         kor_attr["attributes"] = nested_attributes
 
     return kor_attr
+
 
 # Build Kor options from parameter's accepted values
 def accept_to_kor_options(accept: List):

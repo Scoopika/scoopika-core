@@ -12,8 +12,9 @@ from .pre_processing import join_user_actions, build_context
 from .nlp import nlp
 from .pre_processing import setup_parameters_schema
 from .llm_output import process_llm_json_output, apply_type
-from .helpers import is_allowed, is_notallowed 
+from .helpers import is_allowed, is_notallowed
 from .types import ParameterSchema
+
 
 class ArgumentsSelection:
 
@@ -64,8 +65,7 @@ class ArgumentsSelection:
         self.kor_schema = kor_schema.build(self.tool)
 
         self.extraction_chain = create_extraction_chain(
-            self.llm, Object.parse_obj(self.kor_schema),
-            encoder_or_encoder_class="json"
+            self.llm, Object.parse_obj(self.kor_schema), encoder_or_encoder_class="json"
         )
 
     # ----- Process all arguments
@@ -146,8 +146,7 @@ class ArgumentsSelection:
         )
 
         validated_values += list(
-            [key, value]
-            for key, value in default_args if value["success"] is True
+            [key, value] for key, value in default_args if value["success"] is True
         )
 
         invalid_args = list(
@@ -155,7 +154,8 @@ class ArgumentsSelection:
             for key, value in validated_values
             if is_notallowed(value, "success") is True
             and value["action"] == "stop"
-            and self.resolve_default_arg_value(self.parameters[key], "invalid")["why"] == "invalid"
+            and self.resolve_default_arg_value(self.parameters[key], "invalid")["why"]
+            == "invalid"
             and is_allowed(self.parameters[key], "required") is True
         )
 
@@ -204,7 +204,12 @@ class ArgumentsSelection:
             and "properties" in param_options
         ):
             default_values = list(
-                [key, self.resolve_default_arg_value(param_options["properties"][key], state)]
+                [
+                    key,
+                    self.resolve_default_arg_value(
+                        param_options["properties"][key], state
+                    ),
+                ]
                 for key in param_options["properties"].keys()
             )
 
@@ -235,11 +240,9 @@ class ArgumentsSelection:
         return {
             "success": False,
             "action": (
-                "stop"
-                if is_allowed(param_options, "required") is True
-                else "ignore"
+                "stop" if is_allowed(param_options, "required") is True else "ignore"
             ),
-            "why": "N"
+            "why": "N",
         }
 
     def validated_arg_value(self, param_options: Dict, value: Any):
@@ -250,7 +253,10 @@ class ArgumentsSelection:
         typed = apply_type(param_type, value)
         if typed["success"] is False:
             self.new_error(typed["error"])
-            return {"success": False, "action": "stop" if required is True else "ignore"}
+            return {
+                "success": False,
+                "action": "stop" if required is True else "ignore",
+            }
 
         value = typed["value"]
 
@@ -274,7 +280,8 @@ class ArgumentsSelection:
 
                 key_values = {
                     key: arg_value[key]["value"]
-                    for key in arg_value if "value" in arg_value[key]
+                    for key in arg_value
+                    if "value" in arg_value[key]
                 }
 
                 return {"success": True, "value": key_values}
@@ -321,7 +328,8 @@ class ArgumentsSelection:
 
         validated_value = {
             key: self.validated_arg_value(param_options["properties"][key], value[key])
-            for key in value.keys() if key in param_options["properties"]
+            for key in value.keys()
+            if key in param_options["properties"]
         }
 
         return validated_value
@@ -444,7 +452,9 @@ class ArgumentsSelection:
 
         required = is_allowed(param_options, "required")
         accepted_values = param_options["accept"]
-        accepted_values_str = list(str(accepted_value).lower() for accepted_value in accepted_values)
+        accepted_values_str = list(
+            str(accepted_value).lower() for accepted_value in accepted_values
+        )
         minimum_score = param_options["minimum_score"]
 
         if len(accepted_values) < 1:
@@ -452,7 +462,10 @@ class ArgumentsSelection:
             return {"success": True, "value": value}
 
         if str(value).lower() in accepted_values_str:
-            return {"success": True, "value": accepted_values[accepted_values_str.index(str(value).lower())]}
+            return {
+                "success": True,
+                "value": accepted_values[accepted_values_str.index(str(value).lower())],
+            }
 
         if is_allowed(param_options, "similar_values") is False:
             return {

@@ -1,7 +1,7 @@
 from scoopika import ArgumentsSelection
 
 
-class Box():
+class Box:
 
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass

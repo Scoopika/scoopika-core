@@ -1,5 +1,6 @@
 from ..types import TaskSchema, FunctionTaskSchema, PromptTaskSchema
 
+
 def dynamic_prompt(task_schema, inputs):
     """
     Replaces placeholders in a prompt with input values,
@@ -13,9 +14,9 @@ def dynamic_prompt(task_schema, inputs):
         for input_def in task_schema["inputs"]:
             key = input_def["key"]
             if input_def["required"] and key not in inputs:
-                if input_def.get("default") is not None: 
+                if input_def.get("default") is not None:
                     value = input_def["default"]
-                    inputs[key] = value 
+                    inputs[key] = value
                 else:
                     return {"success": False, "error": f"Missing required input: {key}"}
 
