@@ -36,8 +36,8 @@ class ToolSelection:
 
         try:
             llm_output = self.llm.invoke(prompt)
-        except:
-            err = "Can't invoke LLM chain"
+        except (ValueError, TypeError) as e:
+            err = f"Can't invoke LLM chain: {e}"
             self.logger(self, err, "error")
             return {"success": False, "error": err}
 
