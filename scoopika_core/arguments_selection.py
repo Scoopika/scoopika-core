@@ -37,7 +37,7 @@ class ArgumentsSelection:
         history=[],
     ):
         self.llm = llm
-        self.logs = verbose
+        self.verbose = verbose
         self.logger = logger
         self.inputs = inputs
 

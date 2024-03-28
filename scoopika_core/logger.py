@@ -2,10 +2,11 @@ from rich import print
 
 
 def logger(self, value: str, type: str = "default") -> None:
-    if self.logs is False:
+    if self.verbose is False:
         return None
 
     log_value = f"<{self.layer}> {value}"
+    self.logs.append(f"{type}: {log_value}")
 
     if type == "success":
         print("[bold green]SUCCESS:", log_value)

@@ -11,7 +11,7 @@ import time
 class ToolSelection:
 
     layer = "tool-selection"
-    logs = []
+    logs: List[str] = []
 
     def __init__(
         self, llm, logger=logger, multi_tools: bool = False, verbose: bool = True
@@ -19,7 +19,7 @@ class ToolSelection:
         self.llm = llm
         self.logger = logger
         self.multi_tools = multi_tools
-        self.logs = verbose
+        self.verbose = verbose
 
     def selection(self, task: str, tools: List):
         start = time.time()
