@@ -10,6 +10,7 @@ Maybe the user does not have a task, in that case just respond with "none".
 If the user has a request but it can't be done using the tools you have repond with "not found".
 
 Return your response as a JSON blob with 'name' key wrapped inside <json> tags.
+If you select a tool, select only one tool even if the request ask for multiple tools.
 
 Example if selected a tool: <json>{"name": "tool name"}</json>.
 Example if did not select a tool: <json>{"name": "none"}</json>"""

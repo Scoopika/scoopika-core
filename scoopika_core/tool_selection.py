@@ -101,6 +101,9 @@ class ToolSelection:
         if result == "none":
             return {"success": False, "error": "No tools selected"}
 
+        if result == "not found":
+            return {"success": False, "error": "Wanted tool is not available"}
+
         # Get a tool with the tool's name the model returned
         wanted_tools = list(tool for tool in tools if tool["name"] == result)
         is_valid = True if len(wanted_tools) != 0 else False
