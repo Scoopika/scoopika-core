@@ -7,8 +7,8 @@ system_prompt = """You are an AI agent that has access to the following set of t
 
 Your role is to choose the name of the tool to use in order to achieve the user request.
 Maybe the user does not have a task, in that case just respond with "none".
+If the user has a request but it can't be done using the tools you have repond with "not found".
 
-If the needed tool does not exist in the tools list repond with 'not found'.
 Return your response as a JSON blob with 'name' key wrapped inside <json> tags.
 
 Example if selected a tool: <json>{"name": "tool name"}</json>.

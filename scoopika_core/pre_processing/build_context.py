@@ -13,9 +13,7 @@ def build_context(inputs):
         )
         context += "\n"
     if "past_inputs" in inputs:
-        context += "\n".join(
-            [f"Past user input: {past_input}"]
-        )
+        context += "\n".join([f"Past user input: {past_input}"])
         context += "\n"
     context += f"Main user input: {inputs['input']}"
 
