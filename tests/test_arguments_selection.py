@@ -101,7 +101,7 @@ class Test(unittest.TestCase):
         )
 
         inputs = {
-            "input": "Look up most disliked songs made by The Eagles",
+            "input": "Look up songs made by The Eagles",
         }
 
         args_selection = ArgumentsSelection(llm, inputs, test_tool)

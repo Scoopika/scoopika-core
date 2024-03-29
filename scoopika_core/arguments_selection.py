@@ -236,7 +236,7 @@ class ArgumentsSelection:
             )
 
             object_value = {
-                key: value for key, value in default_values if value["success"] is True
+                key: value["value"] for key, value in default_values if value["success"] is True
             }
 
             self.update_layer(param_options["id"])
