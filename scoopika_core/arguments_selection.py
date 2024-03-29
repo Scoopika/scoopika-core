@@ -197,7 +197,7 @@ class ArgumentsSelection:
             self.logger(self, f"Can't fall back to default")
             return {"success": False, "action": "stop", "why": state}
 
-        if "default" in param_options:
+        if "default" in param_options and param_options["default"] is not None:
             self.logger(self, f"Falling back to default value")
             return {"success": True, "value": param_options["default"], "why": "done"}
 
@@ -206,6 +206,7 @@ class ArgumentsSelection:
         if (
             param_type["root"].lower() in ["object", "json", "dict"]
             and "properties" in param_options
+            and len(param_options["properties"].keys()) > 0
         ):
             default_values = list(
                 [
