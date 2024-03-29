@@ -462,7 +462,6 @@ class ArgumentsSelection:
         minimum_score = param_options["minimum_score"]
 
         if len(accepted_values) < 1:
-            self.logger(self, "Empty list of accepted values", "warning")
             return {"success": True, "value": value}
 
         if str(value).lower() in accepted_values_str:

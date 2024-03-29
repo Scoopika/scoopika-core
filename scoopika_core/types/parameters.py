@@ -23,9 +23,9 @@ class ParameterProperty(BaseModel):
         True  # Can the system fallback to the default value if LLM output is missing the parameter
     )
 
-    accept: Optional[
-        List
-    ]  # A list of the values the parameter's value can be (similar to enum)
+    accept: Optional[List] = (
+        []
+    )  # A list of the values the parameter's value can be (similar to enum)
     similar_values: Optional[bool] = (
         False  # if LLM output does not exist in the list of accpeted value, use similarity model to get the closest one
     )
