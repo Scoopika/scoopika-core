@@ -17,7 +17,8 @@ def setup_param(key: str, param_options: Dict) -> Dict:
 
     if param_options["type"]["root"] in ["bool", "boolean"]:
         param_options["accept"] = [True, False]
-        param_options["description"] += " (one of 'True', 'False')"
+        if not param_options["description"].endswith("(one of 'True', 'False')"):
+            param_options["description"] += " (one of 'True', 'False')"
 
     if param_options["type"]["root"].lower() in ["dict", "object", "json"]:
         if "properties" not in param_options:

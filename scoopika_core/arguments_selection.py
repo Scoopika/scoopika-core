@@ -35,6 +35,7 @@ class ArgumentsSelection:
         verbose: bool = True,
         logger: Callable = logger,
         history=[],
+        parameters_ready: bool = False
     ):
         self.llm = llm
         self.verbose = verbose
@@ -49,11 +50,15 @@ class ArgumentsSelection:
             tool["parameters"] = {}
 
         self.tool = tool
-        self.parameters = setup_parameters_schema(tool["parameters"])
-        self.parameters = {
-            key: ParameterSchema(**self.parameters[key]).dict()
-            for key in self.parameters.keys()
-        }
+        if parameters_ready is False:
+            self.parameters = setup_parameters_schema(tool["parameters"])
+            self.parameters = {
+                key: ParameterSchema(**self.parameters[key]).dict()
+                for key in self.parameters.keys()
+            }
+        else:
+            self.parameters = tool["parameters"]
+
         if context is None:
             self.context = build_context(inputs)
         else:
