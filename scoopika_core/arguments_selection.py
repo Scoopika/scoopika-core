@@ -42,7 +42,7 @@ class ArgumentsSelection:
         self.inputs = inputs
 
         if "input" not in inputs:
-            self.new_error(self, "Invalid inputs. 'input' key expected.", "error")
+            self.new_error("Invalid inputs. 'input' key expected.")
             return None
 
         if "parameters" not in tool:

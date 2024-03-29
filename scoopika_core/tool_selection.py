@@ -79,7 +79,7 @@ class ToolSelection:
             "tools": [selected_tool],
         }
 
-    def wanted_tool_from_output(self, out, tools) -> List:
+    def wanted_tool_from_output(self, out, tools) -> Dict:
         # if the model returned only the tool's name as string
         if isinstance(out, str):
             out = {"name": out}

@@ -10,7 +10,7 @@ def apply_json(value):
 
 def apply_list(value):
     if isinstance(value, list):
-        value
+        return value
 
     return [value]
 

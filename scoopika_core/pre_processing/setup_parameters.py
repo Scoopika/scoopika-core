@@ -21,9 +21,6 @@ def setup_param(key: str, param_options: Dict) -> Dict:
 
     if param_options["type"]["root"].lower() in ["dict", "object", "json"]:
         if "properties" not in param_options:
-            self.new_error(
-                f"Invalid parameter schema. '{key}' does not have 'properties'"
-            )
             return param_options
 
         param_options["properties"] = {
