@@ -65,7 +65,7 @@ class ToolSelection:
         wanted_tool = self.wanted_tool_from_output(output_value, tools)
 
         if wanted_tool["success"] is False:
-            return {"success": False, "error": "Can't extract wanted tool"}
+            return wanted_tool
 
         selected_tool = wanted_tool["tool"]
         tool_name = selected_tool["name"]
