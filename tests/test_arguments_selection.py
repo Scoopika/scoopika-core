@@ -52,6 +52,7 @@ class Test(unittest.TestCase):
                             "required": True,
                             "accept": ["views", "date"],
                             "default": "views",
+                            "similar_values": False
                         },
                         "descending": {
                             "description": "Whether to sort results in descending order or not",
@@ -76,7 +77,7 @@ class Test(unittest.TestCase):
                     {
                         "artists": ["Metallica"],
                         "query": "songs by Metallica",
-                        "order": {"field": "date", "descending": True},
+                        "order": {"field": "date", "descending": "yes"},
                     },
                 ],
                 [
@@ -84,7 +85,7 @@ class Test(unittest.TestCase):
                     {
                         "artists": ["Queen"],
                         "query": "songs by Queen",
-                        "order": {"field": "views", "descending": True},
+                        "order": {"field": "views", "descending": "yes"},
                     },
                 ],
             ],
@@ -100,7 +101,7 @@ class Test(unittest.TestCase):
         )
 
         inputs = {
-            "input": "Look up most viewed songs made by The Eagles",
+            "input": "Look up most disliked songs made by The Eagles",
         }
 
         args_selection = ArgumentsSelection(llm, inputs, test_tool)

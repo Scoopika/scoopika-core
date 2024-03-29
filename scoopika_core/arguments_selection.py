@@ -135,14 +135,12 @@ class ArgumentsSelection:
             key for key, value in default_args if value["success"] is True
         )
 
-        # Handle missing arguments that are required and does not have a default value
-        missing_args = list(
-            key
-            for key in self.parameters.keys()
-            if key not in data.keys()
-            and is_allowed(self.parameters[key], "required")
-            and key not in default_args_keys
-        )
+        missing_args = [
+            ids
+            for default in default_args
+            if default[1]["success"] is False and default[1]["action"] == "stop"
+            for ids in default[1]["ids"]
+        ]
 
         validated_values = list(
             [key, self.validated_arg_value(self.parameters[key], value)]
@@ -154,13 +152,14 @@ class ArgumentsSelection:
         )
 
         invalid_args = list(
-            key
+            ids
             for key, value in validated_values
             if is_notallowed(value, "success") is True
             and value["action"] == "stop"
             and self.resolve_default_arg_value(self.parameters[key], "invalid")["why"]
             == "invalid"
             and is_allowed(self.parameters[key], "required") is True
+            for ids in value["ids"]
         )
 
         valid_values = list(
@@ -194,8 +193,12 @@ class ArgumentsSelection:
         default_fallback = is_notallowed(param_options, f"{state}_default_fallback")
 
         if default_fallback is True:
-            self.logger(self, f"Can't fall back to default")
-            return {"success": False, "action": "stop", "why": state}
+            return {
+                "success": False,
+                "action": "stop" if is_allowed(param_options, "required") else "ignore",
+                "why": state,
+                "ids": [param_options["id"]],
+            }
 
         if "default" in param_options and param_options["default"] is not None:
             self.logger(self, f"Falling back to default value")
@@ -242,12 +245,31 @@ class ArgumentsSelection:
                 self.logger(self, f"Falling back to default value")
                 return {"success": True, "value": object_value, "why": "done"}
 
+            no_default = [
+                ids
+                for value in default_values
+                if value[1]["success"] is False and value[1]["action"] == "stop"
+                for ids in value[1]["ids"]
+            ]
+
+            return {
+                "success": False,
+                "action": (
+                    "stop"
+                    if is_allowed(param_options, "required") is True
+                    else "ignore"
+                ),
+                "why": "N",
+                "ids": no_default,
+            }
+
         return {
             "success": False,
             "action": (
                 "stop" if is_allowed(param_options, "required") is True else "ignore"
             ),
             "why": "N",
+            "ids": [param_options["id"]],
         }
 
     def validated_arg_value(self, param_options: Dict, value: Any):
@@ -273,15 +295,15 @@ class ArgumentsSelection:
             if (
                 not is_whole_success and not is_whole_failed
             ):  # the object is not as_whole
-                errors = [
-                    arg_value[key]
+                errors_ids = [
+                    f"{param_options['id']}.{key}"
                     for key in arg_value.keys()
                     if not is_allowed(arg_value[key], "success")
                     and arg_value[key]["action"] == "stop"
                 ]
 
-                if len(errors) > 0:
-                    return {"success": False, "action": "stop"}
+                if len(errors_ids) > 0:
+                    return {"success": False, "action": "stop", "ids": errors_ids}
 
                 key_values = {
                     key: arg_value[key]["value"]
@@ -302,11 +324,15 @@ class ArgumentsSelection:
                 item["value"] for item in arg_value if item["success"] is True
             ]
             if len(validated_items) < 1 and is_allowed(param_options, "required"):
-                return {"success": False, "action": "stop"}
+                return {"success": False, "action": "stop", "ids": [param_options["id"]]}
 
             return {"success": True, "value": validated_items}
 
-        return self.validated_item(param_options, value)
+        validated = self.validated_item(param_options, value)
+        if validated["success"] is False:
+            validated.update({"ids": [param_options["id"]]})
+
+        return validated
 
     def validated_array(self, param_options: Dict, value: List):
         required = is_allowed(param_options, "required")
