@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
                             "required": True,
                             "accept": ["views", "date"],
                             "default": "views",
-                            "similar_values": False
+                            "similar_values": False,
                         },
                         "descending": {
                             "description": "Whether to sort results in descending order or not",

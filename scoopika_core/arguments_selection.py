@@ -236,7 +236,9 @@ class ArgumentsSelection:
             )
 
             object_value = {
-                key: value["value"] for key, value in default_values if value["success"] is True
+                key: value["value"]
+                for key, value in default_values
+                if value["success"] is True
             }
 
             self.update_layer(param_options["id"])
@@ -324,7 +326,11 @@ class ArgumentsSelection:
                 item["value"] for item in arg_value if item["success"] is True
             ]
             if len(validated_items) < 1 and is_allowed(param_options, "required"):
-                return {"success": False, "action": "stop", "ids": [param_options["id"]]}
+                return {
+                    "success": False,
+                    "action": "stop",
+                    "ids": [param_options["id"]],
+                }
 
             return {"success": True, "value": validated_items}
 
