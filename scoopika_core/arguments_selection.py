@@ -36,7 +36,7 @@ class ArgumentsSelection:
         verbose: bool = True,
         logger: Callable = logger,
         history=[],
-        parameters_ready: bool = False
+        parameters_ready: bool = False,
     ):
         self.llm = llm
         self.verbose = verbose
@@ -459,7 +459,9 @@ class ArgumentsSelection:
         ]
 
         if len(valid_tokens) < 1:
-            self.why_invalid[param_options["id"]] = "Had a problem understanding what the provided value is"
+            self.why_invalid[param_options["id"]] = (
+                "Had a problem understanding what the provided value is"
+            )
             return {
                 "success": False,
                 "action": "stop" if required is True else "ignore",
@@ -484,7 +486,9 @@ class ArgumentsSelection:
             context = context.lower()
 
         if value not in context:
-            self.why_invalid[param_options["id"]] = "Had a problem understanding what the provided value is"
+            self.why_invalid[param_options["id"]] = (
+                "Had a problem understanding what the provided value is"
+            )
             return {
                 "success": False,
                 "action": "stop" if required is True else "ignore",
@@ -512,8 +516,12 @@ class ArgumentsSelection:
                 "value": accepted_values[accepted_values_str.index(str(value).lower())],
             }
 
-        joined_accepted_values = ", ".join(f"'{accepted_value}'" for accepted_value in accepted_values_str)
-        why_error = f"(expect one of {joined_accepted_values}) but instead got {str(value)}" 
+        joined_accepted_values = ", ".join(
+            f"'{accepted_value}'" for accepted_value in accepted_values_str
+        )
+        why_error = (
+            f"(expect one of {joined_accepted_values}) but instead got {str(value)}"
+        )
 
         if is_allowed(param_options, "similar_values") is False:
             self.why_invalid[param_options["id"]] = why_error
