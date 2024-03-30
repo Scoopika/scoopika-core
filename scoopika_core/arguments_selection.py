@@ -25,6 +25,7 @@ class ArgumentsSelection:
     args = {}
     waiting_args = []
     start = time.time()
+    why_invalid = {}
 
     def __init__(
         self,
@@ -95,6 +96,7 @@ class ArgumentsSelection:
             "error" if len(self.errors) > 0 else "info",
         )
         validated.update({"errors": self.errors})
+        validated.update({"why_invalid": self.why_invalid})
 
         return validated
 
@@ -457,6 +459,7 @@ class ArgumentsSelection:
         ]
 
         if len(valid_tokens) < 1:
+            self.why_invalid[param_options["id"]] = "Had a problem understanding what the provided value is"
             return {
                 "success": False,
                 "action": "stop" if required is True else "ignore",
@@ -481,6 +484,7 @@ class ArgumentsSelection:
             context = context.lower()
 
         if value not in context:
+            self.why_invalid[param_options["id"]] = "Had a problem understanding what the provided value is"
             return {
                 "success": False,
                 "action": "stop" if required is True else "ignore",
@@ -508,7 +512,11 @@ class ArgumentsSelection:
                 "value": accepted_values[accepted_values_str.index(str(value).lower())],
             }
 
+        joined_accepted_values = ", ".join(f"'{accepted_value}'" for accepted_value in accepted_values_str)
+        why_error = f"(expect one of {joined_accepted_values}) but instead got {str(value)}" 
+
         if is_allowed(param_options, "similar_values") is False:
+            self.why_invalid[param_options["id"]] = why_error
             return {
                 "success": False,
                 "action": "stop" if required is True else "ignore",
@@ -517,6 +525,7 @@ class ArgumentsSelection:
         sorted_values = similarity.similarity(str(value), accepted_values_str)
 
         if len(sorted_values) < 1:
+            self.why_invalid[param_options["id"]] = why_error
             return {
                 "success": False,
                 "action": "stop" if required is True else "ignore",
