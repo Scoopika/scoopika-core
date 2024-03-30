@@ -288,6 +288,7 @@ class ArgumentsSelection:
 
         typed = apply_type(param_type, value)
         if typed["success"] is False:
+            self.why_invalid[param_options["id"]] = "Can't validate invalid data type"
             self.new_error(typed["error"])
             return {
                 "success": False,
