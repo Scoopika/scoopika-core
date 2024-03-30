@@ -17,6 +17,7 @@ class ToolSelection:
         self, llm, logger=logger, multi_tools: bool = False, verbose: bool = True
     ):
         self.llm = llm
+        self.llm.model_kwargs["stop"] = "</json>"
         self.logger = logger
         self.multi_tools = multi_tools
         self.verbose = verbose
@@ -41,8 +42,12 @@ class ToolSelection:
             self.logger(self, err, "error")
             return {"success": False, "error": err}
 
+        llm_output = str(llm_output.content).strip()
+        if llm_output.startswith("<json>"):
+            llm_output += "</json>"
+
         # Try to JSON parse the LLM output
-        json_llm_output = process_llm_json_output(str(llm_output.content))
+        json_llm_output = process_llm_json_output(llm_output)
 
         success = json_llm_output["success"]
 

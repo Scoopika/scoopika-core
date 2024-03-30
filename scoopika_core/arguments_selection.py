@@ -39,6 +39,7 @@ class ArgumentsSelection:
         parameters_ready: bool = False,
     ):
         self.llm = llm
+        self.llm.model_kwargs["stop"] = "</json>"
         self.verbose = verbose
         self.logger = logger
         self.inputs = inputs
@@ -87,8 +88,9 @@ class ArgumentsSelection:
             return extracted
 
         self.logger(self, f"Extraction finished in {(time.time() - self.start):.4f}s")
+        extracted = self.remove_nulls(extracted["data"])
 
-        validated = self.validate(extracted["data"])
+        validated = self.validate(extracted)
         self.layer = "arguments-selection"
         self.logger(
             self,
@@ -100,6 +102,16 @@ class ArgumentsSelection:
 
         return validated
 
+    def remove_nulls(self, data: Dict):
+        valid = {}
+        for key in data.keys():
+            if isinstance(data[key], dict):
+                valid.update(self.remove_nulls(data[key]))
+            elif data[key] is not None:
+                valid.update({key: data[key]})
+        
+        return valid
+
     # ----- Extract arguments using the extraction chain
     def extract_args(self):
         self.logger(self, "Extracting arguments")
@@ -107,17 +119,17 @@ class ArgumentsSelection:
         errors = extraction["text"]["errors"]
         self.raw_model_output = extraction["text"]["raw"]
 
-        if len(errors) > 0:
-            raw_data = extraction["text"]["raw"]
-            json_llm_output = process_llm_json_output(raw_data)
-            if json_llm_output["success"] is True:
-                return {"success": True, "data": json_llm_output["value"]}
-            list(self.new_error(err) for err in errors)
-            return {"success": False, "errors": errors}
+        raw_data = extraction["text"]["raw"].strip()
+        if raw_data.startswith("<json>"):
+            raw_data += "</json>"
 
-        data = extraction["text"]["data"]
+        json_llm_output = process_llm_json_output(raw_data)
+        if json_llm_output["success"] is True:
+            return {"success": True, "data": json_llm_output["value"]}
 
-        return {"success": True, "data": data}
+        errors = ["Invalid LLM output"] + errors
+        list(self.new_error(err) for err in errors)
+        return {"success": False, "errors": errors}
 
     def validate(self, data: Dict):
         self.logger(self, "Validating arguments")
@@ -135,7 +147,7 @@ class ArgumentsSelection:
         default_args = list(
             [key, self.resolve_default_arg_value(self.parameters[key], "missing")]
             for key in self.parameters.keys()
-            if key not in data.keys()
+            if key not in data.keys() or data[key] is None
         )
 
         default_args_keys = list(
@@ -289,7 +301,7 @@ class ArgumentsSelection:
         typed = apply_type(param_type, value)
         if typed["success"] is False:
             self.why_invalid[param_options["id"]] = "Can't validate invalid data type"
-            self.new_error(typed["error"])
+            self.logger(self, typed["error"], "error")
             return {
                 "success": False,
                 "action": "stop" if required is True else "ignore",
@@ -509,7 +521,7 @@ class ArgumentsSelection:
         minimum_score = param_options["minimum_score"]
 
         if len(accepted_values) < 1:
-            return {"success": True, "value": value}
+            return {"success": True, "value": value, "no": True}
 
         if str(value).lower() in accepted_values_str:
             return {
