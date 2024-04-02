@@ -1,10 +1,11 @@
-# Select a tool to execute given a task
+"""Select a tool to execute give a task and a list of available tools"""
 
 from typing import List, Dict
 from .logger import logger
 from .pre_processing import join_tools
 from .prompts import fill_tool_selection_prompt
 from .llm_output import process_llm_json_output
+from .helpers import fix_llm_stop
 import time
 
 
@@ -14,37 +15,28 @@ class ToolSelection:
     logs: List[str] = []
 
     def __init__(
-        self, llm, logger=logger, multi_tools: bool = False, verbose: bool = True
+        self, tools: List[Dict], logger=logger, multi_tools: bool = False, verbose: bool = True
     ):
-        self.llm = llm
-        self.llm.model_kwargs["stop"] = "</json>"
         self.logger = logger
         self.multi_tools = multi_tools
         self.verbose = verbose
+        self.tools = tools
 
-    def selection(self, task: str, tools: List):
-        start = time.time()
-        tools_str = join_tools(
-            tools
-        )  # Join tools as a string in 'name: description' format
-
-        # Create a filled system prompted with the list of available tools
+    def get_prompt(self, context: str, tools: List) -> List:
+        tools_str = join_tools(tools) # Join tools as a string in 'name: description' format
         system_prompt = fill_tool_selection_prompt(tools_str)
         prompt = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": task},
+            {"role": "user", "content": context}
         ]
 
-        try:
-            llm_output = self.llm.invoke(prompt)
-        except (ValueError, TypeError) as e:
-            err = f"Can't invoke LLM chain: {e}"
-            self.logger(self, err, "error")
-            return {"success": False, "error": err}
+        return prompt
 
-        llm_output = str(llm_output.content).strip()
-        if llm_output.startswith("<json>"):
-            llm_output += "</json>"
+    def run(llm_output: str):
+        start = time.time()
+
+        llm_output = str(llm_output).strip()
+        llm_output = fix_llm_stop(llm_output, "json") 
 
         # Try to JSON parse the LLM output
         json_llm_output = process_llm_json_output(llm_output)
@@ -64,7 +56,7 @@ class ToolSelection:
             output_value = output_value[0]
         elif isinstance(output_value, list) and len(output_value) == 0:
             return {"success": True, "tools": []}
-        elif isinstance(output_value, dict) and len(list(output_value.keys())) < 1:
+        elif isinstance(output_value, dict) and len(list(output_value.keys())) == 0:
             return {"success": True, "tools": []}
 
         wanted_tool = self.wanted_tool_from_output(output_value, tools)
@@ -120,22 +112,3 @@ class ToolSelection:
             return {"success": False}
 
         return {"success": True, "tool": wanted_tools[0]}
-
-
-test_tools = [
-    {
-        "name": "print",
-        "description": "print values to the console",
-        "parameters": {
-            "values": {
-                "type": {"root": "array", "items": "string"},
-                "description": "The values to print to the console",
-            }
-        },
-    },
-    {
-        "name": "clear",
-        "description": "clear the console output",
-        "parameters": {},
-    },
-]

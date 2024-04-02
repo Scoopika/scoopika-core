@@ -108,8 +108,12 @@ class ArgumentsSelection:
             if isinstance(data[key], dict):
                 valid.update(self.remove_nulls(data[key]))
             elif data[key] is not None:
+                if isinstance(data[key], str) and len(data[key]) == 0:
+                    continue
+                elif isinstance(data[key], list) and len(data[key]) == 0:
+                    continue
                 valid.update({key: data[key]})
-        
+
         return valid
 
     # ----- Extract arguments using the extraction chain
