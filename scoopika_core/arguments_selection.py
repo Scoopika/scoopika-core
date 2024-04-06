@@ -29,8 +29,6 @@ class ArgumentsSelection:
 
     def __init__(
         self,
-        llm,
-        inputs: Dict,
         tool: Dict,
         context: str | None = None,
         verbose: bool = True,
@@ -38,15 +36,8 @@ class ArgumentsSelection:
         history=[],
         parameters_ready: bool = False,
     ):
-        self.llm = llm
-        self.llm.model_kwargs["stop"] = "</json>"
         self.verbose = verbose
         self.logger = logger
-        self.inputs = inputs
-
-        if "input" not in inputs:
-            self.new_error("Invalid inputs. 'input' key expected.")
-            return None
 
         if "parameters" not in tool:
             tool["parameters"] = {}
@@ -61,15 +52,10 @@ class ArgumentsSelection:
         else:
             self.parameters = tool["parameters"]
 
-        if context is None:
-            self.context = build_context(inputs)
-        else:
-            self.context = context
+        self.context = context
         self.build_kor_schema()
 
         self.validation_steps = [self.match_context, self.important, self.accept]
-
-        pass
 
     # ----- Build a Kor schema from the tool's parameters config
     def build_kor_schema(self):

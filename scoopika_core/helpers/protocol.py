@@ -6,34 +6,33 @@ from typing import Literal, Dict, Callable
 
 class Protocol:
 
-    def __init__(self, rid: str, sid: str):
-        self.rid = rid # request id
-        self.sid = sid # session id
+    def __init__(self, sid: str = "global"):
+        self.sid = sid  # session id
 
     def response(
-        current_status: literal["done", "waiting", "need", "error", "communicate"],
-        next_status: literal["ready", "waiting"],
+        self,
+        current_status: Literal["done", "waiting", "need", "error", "communicate"],
+        next_status: Literal["ready", "waiting"],
         stage: str,
         main_field: str,
-        reconnect: bool,
-        more: dict = {}
+        reconnect: bool = False,
+        data: dict = {},
     ):
 
-        if main_field not in more.keys():
+        if main_field not in data.keys():
             raise exception(f"the main field '{main_field}' not found in data payload")
 
         response = {
             "$": {
-                "rid": self.rid,
                 "sid": self.sid,
                 "current_status": current_status,
                 "next_status": next_status,
                 "stage": stage,
                 "main_field": main_field,
-                "reconnect": reconnect
+                "reconnect": reconnect,
             }
         }
 
-        response.update(more)
+        response.update({"data": data})
 
         return response
